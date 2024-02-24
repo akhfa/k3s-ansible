@@ -1,0 +1,4 @@
+- hosts: all
+  roles:
+  - role: hifis.unattended_upgrades
+    when: ansible_facts['os_family'] == 'Ubuntu' or ansible_facts['os_family'] == 'Debian'
