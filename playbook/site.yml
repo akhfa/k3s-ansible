@@ -1,4 +1,10 @@
 ---
+- name: Upgrade all operating system package and set unattended upgrade
+  hosts: all
+  roles:
+    - role: pescobar.upgrade_all_packages
+      when: ansible_facts['os_family'] == 'Ubuntu' or ansible_facts['os_family'] == 'Debian'
+
 - name: Cluster prep
   hosts: k3s_cluster
   gather_facts: true
