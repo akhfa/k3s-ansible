@@ -1,5 +1,5 @@
 ---
-- name: Upgrade all operating system package and set unattended upgrade
+- name: Upgrade all operating system packages
   hosts: all
   roles:
     - role: pescobar.upgrade_all_packages
