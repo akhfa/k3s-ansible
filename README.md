@@ -56,6 +56,10 @@ An odd number of server nodes is required (3,5,7). Read the [official documentat
 
 Setting up a loadbalancer or VIP beforehand to use as the API endpoint is possible but not covered here.
 
+Before we execute the ansible, we need to install all required ansible-galaxy roles
+```bash
+ansible-galaxy install -r roles/requirements.yml
+```
 
 Start provisioning of the cluster using the following command:
 
