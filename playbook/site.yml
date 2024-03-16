@@ -2,7 +2,7 @@
 - name: Upgrade all operating system packages
   hosts: all
   roles:
-    - role: pescobar.upgrade_all_packages
+    - role: akhfa.upgrade_all_packages
       when: ansible_facts['os_family'] == 'Ubuntu' or ansible_facts['os_family'] == 'Debian'
 
 - name: Cluster prep
