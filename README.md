@@ -1,16 +1,13 @@
 # Build a Kubernetes cluster using K3s via Ansible
 
 Author: <https://github.com/itwars>  
-Current Maintainer: <https://github.com/dereknola>
+Official Maintainer: <https://github.com/dereknola>
+This Repository Maintainer: <https://github.com/akhfa/>
 
 Easily bring up a cluster on machines running:
 
 - [X] Debian
 - [X] Ubuntu
-- [X] Raspberry Pi OS
-- [X] RHEL Family (CentOS, Redhat, Rocky Linux...)
-- [X] SUSE Family (SLES, OpenSUSE Leap, Tumbleweed...)
-- [X] ArchLinux
 
 on processor architectures:
 
@@ -30,10 +27,11 @@ It is also recommended that all managed nodes disable firewalls and swap. See [K
 
 ## Usage
 
-First copy the sample inventory to `inventory.yml`.
+First copy the sample inventory to `inventory.yml` and vars/vars-example.yml to `vars/vars.yml`
 
 ```bash
 cp inventory-sample.yml inventory.yml
+cp vars/vars-example.yml vars/vars.yml
 ```
 
 Second edit the inventory file to match your cluster setup. For example:
@@ -64,7 +62,7 @@ ansible-galaxy install -r roles/requirements.yml
 Start provisioning of the cluster using the following command:
 
 ```bash
-ansible-playbook playbook/site.yml -i inventory.yml
+ansible-playbook playbook/site.yml -i inventory.yml -e @vars/vars.yml
 ```
 
 ## Upgrading

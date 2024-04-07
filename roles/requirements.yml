@@ -1,1 +1,3 @@
-- src: pescobar.upgrade_all_packages
+---
+- name: akhfa.upgrade_all_packages
+  src: akhfa.upgrade-all-packages
