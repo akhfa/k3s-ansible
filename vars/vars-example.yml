@@ -9,6 +9,7 @@ api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups
 extra_server_args: ""
 extra_agent_args: ""
 # Optional vars
+# cluster_context: k3s-ansible
 # api_port: 6443
 # k3s_server_location: /var/lib/rancher/k3s
 # systemd_dir: /etc/systemd/system
@@ -22,3 +23,7 @@ extra_agent_args: ""
 # This is now an inner yaml file. Maintain the indentation.
 # YAML here will be placed as the content of /etc/rancher/k3s/config.yaml
 # See https://docs.k3s.io/installation/configuration#configuration-file
+# registries_config_yaml:  |
+# Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
+# YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
+# See https://docs.k3s.io/installation/private-registry
