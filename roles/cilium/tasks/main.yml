@@ -12,18 +12,10 @@
   changed_when: false
   ignore_errors: true
 
-- name: Debug existing Cilium CLI version
-  ansible.builtin.debug:
-    msg: "Installed Cilium CLI version: {{ installed_cilium_version.stdout }}"
-
 - name: Set flag for Cilium CLI update needed
   ansible.builtin.set_fact:
     cilium_update_needed: "{{ installed_cilium_version.stdout is version(cilium_cli_version.content | trim, '<') }}"
   when: installed_cilium_version.rc == 0
-
-- name: Debug fetched stable Cilium CLI version
-  ansible.builtin.debug:
-    msg: "Fetched stable Cilium CLI version: {{ cilium_cli_version.content | trim }}"
 
 - name: Set flag for Cilium CLI update needed when Cilium is not installed
   ansible.builtin.set_fact:
