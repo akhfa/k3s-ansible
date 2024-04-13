@@ -22,15 +22,9 @@
     cilium_update_needed: true
   when: installed_cilium_version.rc != 0
 
-- name: Set CLI architecture
+- name: Set CLI architecture, use amd64 when the ansible_architecture is x86_64, otherwise, use arm64
   ansible.builtin.set_fact:
-    cli_arch: "amd64"
-  when: ansible_architecture == "x86_64"
-
-- name: Override CLI architecture for arm64
-  ansible.builtin.set_fact:
-    cli_arch: "arm64"
-  when: ansible_architecture == "aarch64"
+    cli_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
 
 - name: Download Cilium CLI tarball and sha256sum when update is needed
   ansible.builtin.get_url:
