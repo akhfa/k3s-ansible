@@ -43,6 +43,7 @@
   ignore_errors: true
   register: sha256sum_check
   when: cilium_update_needed
+  changed_when: false
 
 - name: Extract Cilium CLI tarball
   ansible.builtin.unarchive:
