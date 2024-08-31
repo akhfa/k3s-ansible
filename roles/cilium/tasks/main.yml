@@ -62,9 +62,16 @@
     - ".sha256sum"
   when: cilium_update_needed
 
+- name: Check if Cilium is already installed
+  ansible.builtin.command: "cilium status"
+  register: cilium_status
+  ignore_errors: true
+
 - name: Install Cilium network (assuming cilium_version and cilium_pod_cidr are defined)
   ansible.builtin.command: >
     cilium install --version {{ cilium_version }}
     --set=ipam.operator.clusterPoolIPv4PodCIDRList="{{ cilium_pod_cidr }}"
     --set encryption.enabled=true
     --set encryption.type=wireguard
+  when: cilium_status.rc != 0
+  changed_when: cilium_status.rc != 0
