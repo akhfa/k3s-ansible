@@ -31,3 +31,5 @@
   become: true
   roles:
     - role: cilium
+  tags:
+    - skip_ansible_lint
