@@ -67,6 +67,7 @@
   ansible.builtin.command: "cilium status"
   register: cilium_status
   ignore_errors: true
+  changed_when: false
 
 - name: Install Cilium network (assuming cilium_version and cilium_pod_cidr are defined)
   ansible.builtin.command: >
