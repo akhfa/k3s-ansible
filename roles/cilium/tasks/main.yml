@@ -37,7 +37,7 @@
   when: cilium_update_needed
 
 - name: Verify Cilium CLI tarball
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: "sha256sum --check /tmp/cilium-linux-{{ cli_arch }}.tar.gz.sha256sum"
     chdir: "/tmp"
   ignore_errors: true
