@@ -15,12 +15,12 @@
 - name: Set flag for Cilium CLI update needed
   ansible.builtin.set_fact:
     cilium_update_needed: "{{ installed_cilium_version.stdout is version(cilium_cli_version.content | trim, '<') }}"
-  when: installed_cilium_version.rc == 0
+  when: installed_cilium_version.rc == 0 and installed_cilium_version.stdout != ""
 
 - name: Set flag for Cilium CLI update needed when Cilium is not installed
   ansible.builtin.set_fact:
     cilium_update_needed: true
-  when: installed_cilium_version.rc != 0
+  when: installed_cilium_version.rc != 0 or installed_cilium_version.stdout == ""
 
 - name: Set CLI architecture, use amd64 when the ansible_architecture is x86_64, otherwise, use arm64
   ansible.builtin.set_fact:
@@ -62,7 +62,7 @@
     - ".sha256sum"
   when: cilium_update_needed
 
-- name: Install Cilium network
+- name: Install Cilium network (assuming cilium_version and cilium_pod_cidr are defined)
   command: >
     cilium install --version {{ cilium_version }}
     --set=ipam.operator.clusterPoolIPv4PodCIDRList="{{ cilium_pod_cidr }}"
