@@ -31,6 +31,7 @@
     url: "https://github.com/cilium/cilium-cli/releases/download/{{ cilium_cli_version.content | trim }}/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
     dest: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
     force: true
+    mode: "0644"
   loop:
     - ""
     - ".sha256sum"
