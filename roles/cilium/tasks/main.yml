@@ -1,0 +1,80 @@
+---
+- name: Get Cilium CLI stable version
+  ansible.builtin.uri:
+    url: "https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt"
+    return_content: true
+  register: cilium_cli_version
+
+- name: Check existing Cilium CLI version
+  ansible.builtin.shell: cilium version --client | grep 'cilium-cli' | awk '{print $2}'
+  register: installed_cilium_version
+  failed_when: false
+  changed_when: false
+  ignore_errors: true
+
+- name: Set flag for Cilium CLI update needed
+  ansible.builtin.set_fact:
+    cilium_update_needed: "{{ installed_cilium_version.stdout is version(cilium_cli_version.content | trim, '<') }}"
+  when: installed_cilium_version.rc == 0 and installed_cilium_version.stdout != ""
+
+- name: Set flag for Cilium CLI update needed when Cilium is not installed
+  ansible.builtin.set_fact:
+    cilium_update_needed: true
+  when: installed_cilium_version.rc != 0 or installed_cilium_version.stdout == ""
+
+- name: Set CLI architecture, use amd64 when the ansible_architecture is x86_64, otherwise, use arm64
+  ansible.builtin.set_fact:
+    cli_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+
+- name: Download Cilium CLI tarball and sha256sum when update is needed
+  ansible.builtin.get_url:
+    url: "https://github.com/cilium/cilium-cli/releases/download/{{ cilium_cli_version.content | trim }}/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    dest: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    force: true
+    mode: "0644"
+  loop:
+    - ""
+    - ".sha256sum"
+  when: cilium_update_needed
+
+- name: Verify Cilium CLI tarball
+  ansible.builtin.command:
+    cmd: "sha256sum --check /tmp/cilium-linux-{{ cli_arch }}.tar.gz.sha256sum"
+    chdir: "/tmp"
+  ignore_errors: true
+  register: sha256sum_check
+  when: cilium_update_needed
+  changed_when: false
+
+- name: Extract Cilium CLI tarball
+  ansible.builtin.unarchive:
+    src: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz"
+    dest: "/usr/local/bin"
+    remote_src: true
+  when:
+    - cilium_update_needed
+    - sha256sum_check.rc == 0
+
+- name: Remove Cilium CLI tarball and sha256sum file
+  ansible.builtin.file:
+    path: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz{{ item }}"
+    state: absent
+  loop:
+    - ""
+    - ".sha256sum"
+  when: cilium_update_needed
+
+- name: Check if Cilium is already installed
+  ansible.builtin.command: "cilium status"
+  register: cilium_status
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Cilium network (assuming cilium_version and cilium_pod_cidr are defined)
+  ansible.builtin.command: >
+    cilium install --version {{ cilium_version }}
+    --set=ipam.operator.clusterPoolIPv4PodCIDRList="{{ cilium_pod_cidr }}"
+    --set encryption.enabled=true
+    --set encryption.type=wireguard
+  when: cilium_status.rc != 0
+  changed_when: cilium_status.rc != 0
