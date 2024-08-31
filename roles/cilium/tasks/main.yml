@@ -2,7 +2,7 @@
 - name: Get Cilium CLI stable version
   ansible.builtin.uri:
     url: "https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt"
-    return_content: yes
+    return_content: true
   register: cilium_cli_version
 
 - name: Check existing Cilium CLI version
@@ -48,7 +48,7 @@
   ansible.builtin.unarchive:
     src: "/tmp/cilium-linux-{{ cli_arch }}.tar.gz"
     dest: "/usr/local/bin"
-    remote_src: yes
+    remote_src: true
   when:
     - cilium_update_needed
     - sha256sum_check.rc == 0
@@ -63,7 +63,7 @@
   when: cilium_update_needed
 
 - name: Install Cilium network (assuming cilium_version and cilium_pod_cidr are defined)
-  command: >
+  ansible.builtin.command: >
     cilium install --version {{ cilium_version }}
     --set=ipam.operator.clusterPoolIPv4PodCIDRList="{{ cilium_pod_cidr }}"
     --set encryption.enabled=true
