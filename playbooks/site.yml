@@ -25,3 +25,9 @@
   become: true
   roles:
     - role: k3s_agent
+
+- name: Install Cilium
+  hosts: "{{ groups['server'][0] }}" # noqa
+  become: true
+  roles:
+    - role: cilium
